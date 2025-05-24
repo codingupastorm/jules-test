@@ -1,0 +1,190 @@
+/* Basic body styling - can be expanded later */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.main-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* 6 columns */
+    grid-template-rows: repeat(3, 100px);    /* 3 rows, each 100px tall */
+    gap: 5px; /* Space between grid cells */
+    border: 2px solid #333;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #d2b48c; /* Tan color for the board */
+}
+
+.space {
+    border: 1px solid #666;
+    background-color: #fffacd; /* Lemon chiffon for spaces */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* For positioning player pieces */
+    font-size: 10px;
+    text-align: center;
+}
+
+.player-piece {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Circular pieces */
+    position: absolute; 
+    /* Centering properties for a single piece in a square */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Default to centered */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: white;
+}
+
+#piece-1 {
+    background-color: #ff4136; /* Red */
+    /* Initial offset is handled by script if both start together, 
+       or centered by default if alone. */
+}
+
+#piece-2 {
+    background-color: #0074d9; /* Blue */
+    /* Initial offset is handled by script if both start together,
+       or centered by default if alone. */
+}
+
+.dice-display {
+    min-height: 60px;
+    border: 2px solid #666;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #e9e9e9;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.game-messages {
+    min-height: 60px;
+    border: 2px solid #999;
+    padding: 15px;
+    background-color: #d9d9d9;
+    font-style: italic;
+    min-height: 40px; /* Ensure it has some height even when empty */
+    display: flex; /* For aligning text if needed */
+    align-items: center;
+    justify-content: center;
+}
+.game-messages.error { color: #D8000C; background-color: #FFD2D2; }
+.game-messages.win { color: #270; background-color: #DFF2BF; }
+.game-messages.mine { color: #9F6000; background-color: #FEEFB3; }
+
+
+/* Style for the text within the placeholder divs */
+.game-board p, .dice-display p /* .game-messages p styling is handled by .game-messages itself now */ {
+    margin: 5px 0;
+}
+
+/* Power-up Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#powerup-selection {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 8px;
+}
+
+#powerup-options button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#powerup-options button:hover {
+    background-color: #45a049;
+}
+
+#powerup-options button .powerup-name {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#powerup-options button .powerup-description {
+    font-size: 0.9em;
+    display: block;
+}
+
+/* Re-roll Button Styles */
+.reroll-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+.reroll-button:hover {
+    background-color: #0056b3;
+}
+
+/* Boost Space Styles */
+.boost-space {
+    background-color: #c1e1c1 !important; /* Light green, important to override default space bg */
+    /* Optionally, add a small icon or border */
+    /* border: 2px dashed #4CAF50; */
+}
+.boost-space::after {
+    content: "🚀"; /* Example: rocket emoji for boost */
+    font-size: 1.2em;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    opacity: 0.7;
+}
