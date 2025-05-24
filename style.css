@@ -188,3 +188,43 @@ body {
     right: 5px;
     opacity: 0.7;
 }
+
+/* Valid Drop Target Styles */
+.valid-drop-target {
+    outline: 3px dashed #4CAF50; /* Green dashed outline */
+    background-color: rgba(76, 175, 80, 0.15); /* Light green tint */
+    /* Ensure it's visually distinct from other highlights if they overlap by chance */
+    /* z-index: 1; /* May not be needed if outlines/backgrounds are sufficient */
+}
+
+/* Mine Space Styles */
+.mine-visible {
+    background-color: #ffdddd !important; /* Light red, important to override default/boost */
+    /* border: 1px dashed #cc0000; */
+}
+.mine-visible::before { /* Using ::before to not conflict with boost's ::after */
+    content: "💣"; /* Bomb emoji for mines */
+    font-size: 1.2em;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    opacity: 0.7;
+}
+
+/* Ensure mine icon shows even if it's also a boost space */
+.boost-space.mine-visible::after { /* Boost icon */
+    content: "🚀"; 
+    font-size: 1.2em;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    opacity: 0.7;
+}
+.boost-space.mine-visible::before { /* Mine icon - ensure it's still there */
+    content: "💣";
+    font-size: 1.2em;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    opacity: 0.7;
+}

@@ -74,6 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let draggedPieceId = null;
     let draggedPieceStartSpaceId = null;
 
+    // --- Helper function to clear valid drop target highlights ---
+    function clearValidDropTargets() {
+        const targets = document.querySelectorAll('.valid-drop-target');
+        targets.forEach(target => {
+            target.classList.remove('valid-drop-target');
+        });
+    }
+
     // --- Helper function to display messages ---
     function displayMessage(message, type = 'info') {
         if (gameMessagesDisplay) {
@@ -136,6 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add class for boost spaces
             if (levelConfig.boostSpaces && levelConfig.boostSpaces[`space-${i + 1}`]) {
                 space.classList.add('boost-space');
+            }
+            // Add class for visible mines
+            if (MINED_SPACES.includes(`space-${i + 1}`)) { // MINED_SPACES is already set from levelConfig
+                space.classList.add('mine-visible');
             }
 
             gameBoardElement.appendChild(space);
@@ -374,15 +386,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     event.preventDefault();
                     return;
                 }
+                
                 draggedPieceId = event.target.id;
                 draggedPieceStartSpaceId = playerPiecePositions[draggedPieceId];
                 event.dataTransfer.setData('text/plain', event.target.id);
                 // event.target.style.opacity = '0.7'; // Visual cue
+
+                // Highlight valid drop targets
+                clearValidDropTargets(); // Clear any previous ones
+                const startSpaceNumber = parseInt(draggedPieceStartSpaceId.split('-')[1]);
+                const maxSpaceNumber = parseInt(WINNING_SPACE_ID.split('-')[1]);
+
+                activeDice.forEach(dieValue => {
+                    if (dieValue !== null) {
+                        const targetSpaceNumber = startSpaceNumber + dieValue;
+                        if (targetSpaceNumber > 0 && targetSpaceNumber <= maxSpaceNumber) {
+                            const targetSpaceElement = document.getElementById(`space-${targetSpaceNumber}`);
+                            if (targetSpaceElement) {
+                                targetSpaceElement.classList.add('valid-drop-target');
+                            }
+                        }
+                    }
+                });
             });
 
-            // piece.addEventListener('dragend', (event) => {
-            //     event.target.style.opacity = '1'; // Reset opacity
-            // });
+            piece.addEventListener('dragend', (event) => {
+                clearValidDropTargets();
+                // event.target.style.opacity = '1'; // Reset opacity if it was changed
+            });
         }
     });
 
@@ -541,6 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             draggedPieceId = null; 
             draggedPieceStartSpaceId = null;
+            clearValidDropTargets(); // Clear highlights after drop attempt
         });
     } else {
         console.error("Game board element not found for event delegation!");

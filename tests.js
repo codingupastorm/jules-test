@@ -361,6 +361,64 @@ function runLevelProgressionTests() {
     teardownTestEnvironment();
 }
 
+function runUIVisibilityTests() {
+    logTestResult("--- Starting UI Visibility Tests ---", "info");
+
+    // Test Case: Visible Mines
+    setupTestEnvironment({testName: "Visible Mines", level: 1});
+    const level1Config = LEVEL_CONFIGS.find(l => l.levelNumber === 1);
+    
+    level1Config.mines.forEach(mineId => {
+        const mineElement = document.getElementById(mineId);
+        assertTrue(mineElement && mineElement.classList.contains('mine-visible'), `Mine on ${mineId} should have 'mine-visible' class.`);
+    });
+
+    const nonMineIds = ['space-1', 'space-2', 'space-6']; // Example non-mines for level 1
+    nonMineIds.forEach(nonMineId => {
+        const nonMineElement = document.getElementById(nonMineId);
+        assertFalse(nonMineElement && nonMineElement.classList.contains('mine-visible'), `${nonMineId} (non-mine) should not have 'mine-visible' class.`);
+    });
+    teardownTestEnvironment();
+
+    // Test Case: Valid Drop Location Indicators
+    setupTestEnvironment({
+        testName: "Valid Drop Location Indicators",
+        level: 1, // Level 1 has 18 spaces
+        piece1Position: 'space-1'
+    });
+    activeDice = [3, 4]; // Manually set for test predictability
+    diceValues = [3, 4]; // Ensure this is also set if any internal logic might read it before activeDice fully processed
+
+    // Simulate dragstart state and apply highlighting logic
+    draggedPieceId = 'piece-1'; 
+    draggedPieceStartSpaceId = playerPiecePositions[draggedPieceId]; // Should be 'space-1'
+    
+    // Replicated highlighting logic from script.js's dragstart
+    const startSpaceNumForHighlight = parseInt(draggedPieceStartSpaceId.split('-')[1]);
+    const maxSpaceNumForHighlight = parseInt(WINNING_SPACE_ID.split('-')[1]); // WINNING_SPACE_ID is set by initializeGame
+
+    activeDice.forEach(die => {
+        if (die === null) return;
+        const targetSpaceNum = startSpaceNumForHighlight + die;
+        if (targetSpaceNum > 0 && targetSpaceNum <= maxSpaceNumForHighlight) {
+            const targetSpaceEl = document.getElementById(`space-${targetSpaceNum}`);
+            if (targetSpaceEl) targetSpaceEl.classList.add('valid-drop-target');
+        }
+    });
+
+    assertTrue(document.getElementById('space-4').classList.contains('valid-drop-target'), "Space-4 (1+3) should be a valid drop target.");
+    assertTrue(document.getElementById('space-5').classList.contains('valid-drop-target'), "Space-5 (1+4) should be a valid drop target.");
+    assertFalse(document.getElementById('space-2').classList.contains('valid-drop-target'), "Space-2 should NOT be a valid drop target.");
+    assertFalse(document.getElementById('space-6').classList.contains('valid-drop-target'), "Space-6 should NOT be a valid drop target.");
+    
+    // Test clearing highlights
+    clearValidDropTargets(); // This function is globally available from script.js
+    assertFalse(document.getElementById('space-4').classList.contains('valid-drop-target'), "Space-4 highlight should be cleared.");
+    assertFalse(document.getElementById('space-5').classList.contains('valid-drop-target'), "Space-5 highlight should be cleared.");
+    
+    teardownTestEnvironment();
+}
+
 
 // --- Main Test Runner ---
 function runAllTests() {
@@ -376,6 +434,7 @@ function runAllTests() {
     runPowerUpTests();        // Depends on handleDropEvent & handleReroll
     runBoostSpaceTests();     // Depends on handleDropEvent
     runLevelProgressionTests(); // Depends on applyPowerUp
+    runUIVisibilityTests();     // New test suite
 
     logTestResult("========= All Tests Complete =========", "info");
     // Restore original displayMessage after all tests are done
