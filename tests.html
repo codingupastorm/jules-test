@@ -2,81 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Logic Tests</title>
-    <link rel="stylesheet" href="style.css"> <!-- Main game styles for board consistency -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #test-controls button {
-            padding: 10px 15px;
-            font-size: 16px;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-        #test-results p {
-            margin: 5px 0;
-            padding: 5px;
-            border-radius: 3px;
-        }
-        #test-results .pass {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        #test-results .fail {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        #test-results .info {
-            background-color: #e2e3e5;
-            color: #383d41;
-            border: 1px solid #d6d8db;
-            font-weight: bold;
-        }
-        /* Minimal game elements for script.js to not break */
-        .main-container {
-            border: none; /* Don't need the full game look */
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #test-results { border: 1px solid #ccc; padding: 10px; margin-top: 20px; max-height: 500px; overflow-y: auto; }
+        .test-result { margin-bottom: 5px; padding: 5px; border-radius: 3px; }
+        .pass { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .summary { margin-top: 10px; font-weight: bold; }
+        #hidden-game-elements { display: none; } /* Hide actual game UI elements */
     </style>
 </head>
 <body>
-    <h1>Game Logic Test Suite</h1>
+    <h1>Game Logic Unit Tests</h1>
+    <button id="run-tests-button">Run Tests</button>
+    <div id="test-results"></div>
 
-    <div id="test-controls">
-        <button id="run-tests-button">Run All Tests</button>
-    </div>
-
-    <div id="test-results">
-        <!-- Test results will be appended here -->
-    </div>
-
-    <!-- Minimal Game Structure for script.js dependencies -->
-    <!-- These elements are needed for script.js to load and initialize without errors -->
-    <div class="main-container" style="display: none;"> <!-- Hidden, as we don't need to see the game -->
-        <div class="level-info">
-            <p>Level: <span id="current-level-display">1</span></p>
+    <!-- Hidden div for game elements that script.js might need on load -->
+    <div id="hidden-game-elements">
+        <div id="game-container">
+            <div id="game-info">
+                Level: <span id="level-display">1</span>
+                Target: <span id="target-display">0</span>
+            </div>
+            <div id="grid-container"></div>
+            <div id="message-area"></div>
         </div>
-        <div class="game-board" id="game-board">
-            <!-- Dynamically filled by script.js -->
-        </div>
-        <div class="dice-display" id="dice-display">
-            <button id="roll-dice-button">Roll Dice</button>
-            <p>
-                Die 1: <span id="die1-value">0</span> <button id="reroll-die1-button" class="reroll-button" style="display:none;">🎲</button> | 
-                Die 2: <span id="die2-value">0</span> <button id="reroll-die2-button" class="reroll-button" style="display:none;">🎲</button>
-            </p>
-        </div>
-        <div class="game-messages" id="game-messages">
-            <p>Game messages</p>
-        </div>
-    </div>
-    <div id="powerup-selection" class="modal" style="display:none;">
-        <h2>Choose a Power-up!</h2>
-        <div id="powerup-options"></div>
     </div>
 
     <script src="script.js"></script> 

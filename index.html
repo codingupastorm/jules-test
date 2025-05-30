@@ -3,58 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
+    <title>Color Burst Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="main-container">
-        <div class="level-info">
-            <p>Level: <span id="current-level-display">1</span></p>
+    <div id="game-container">
+        <div id="game-info">
+            Level: <span id="level-display">1</span>
+            Target: <span id="target-display">0</span>
         </div>
-        <div class="game-board" id="game-board">
-            <div class="space" id="space-1">
-                <div class="player-piece" id="piece-1">P1</div>
-                <div class="player-piece" id="piece-2">P2</div>
-                (Start)
-            </div>
-            <div class="space" id="space-2">2</div>
-            <div class="space" id="space-3">3</div>
-            <div class="space" id="space-4">4</div>
-            <div class="space" id="space-5">5</div>
-            <div class="space" id="space-6">6</div>
-            <div class="space" id="space-7">7</div>
-            <div class="space" id="space-8">8</div>
-            <div class="space" id="space-9">9</div>
-            <div class="space" id="space-10">10</div>
-            <div class="space" id="space-11">11</div>
-            <div class="space" id="space-12">12</div>
-            <div class="space" id="space-13">13</div>
-            <div class="space" id="space-14">14</div>
-            <div class="space" id="space-15">15</div>
-            <div class="space" id="space-16">16</div>
-            <div class="space" id="space-17">17</div>
-            <div class="space" id="space-18">(End)</div>
-        </div>
-        <div class="dice-display" id="dice-display">
-            <button id="roll-dice-button">Roll Dice</button>
-            <p>
-                Die 1: <span id="die1-value">0</span> <button id="reroll-die1-button" class="reroll-button" style="display:none;">🎲</button> | 
-                Die 2: <span id="die2-value">0</span> <button id="reroll-die2-button" class="reroll-button" style="display:none;">🎲</button>
-            </p>
-        </div>
-        <div class="game-messages" id="game-messages">
-            <p>Game messages will be shown here</p>
-        </div>
+        <div id="grid-container"></div>
+        <div id="message-area"></div>
     </div>
-
-    <!-- Power-up Selection Modal -->
-    <div id="powerup-selection" class="modal" style="display:none;">
-        <h2>Choose a Power-up!</h2>
-        <div id="powerup-options">
-            <!-- Power-up buttons will be injected here by script.js -->
-        </div>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
