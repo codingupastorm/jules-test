@@ -138,49 +138,37 @@ document.addEventListener('DOMContentLoaded', () => {
     function moveLeft() {
         let moved = false;
         for (let r = 0; r < GRID_SIZE; r++) {
-            const currentRow = board[r];
-            const newRow = [];
-            // Collect all blocks
-            for (let c = 0; c < GRID_SIZE; c++) {
-                if (currentRow[c] !== null) {
-                    newRow.push(currentRow[c]);
-                }
-            }
-            // Fill remaining with null
-            while (newRow.length < GRID_SIZE) {
-                newRow.push(null);
-            }
-            // Check if row changed BEFORE modification for merging.
             // The 'moved' flag will now be more complex. If a value changes or position changes.
             let initialRowState = [...board[r]]; // shallow copy for comparison
 
-            // Phase 1: Collect non-null items for potential merging
-            let line = [];
+            // Phase 1: Collect non-null items from the current board state for this row
+            let collectedBlocks = [];
             for (let c = 0; c < GRID_SIZE; c++) {
                 if (board[r][c] !== null) {
-                    line.push(board[r][c]);
+                    collectedBlocks.push(board[r][c]);
                 }
             }
 
-            // Phase 2: Merge items in the collected line (LTR)
-            for (let i = 0; i < line.length - 2; i++) {
-                if (typeof line[i] === 'number' && typeof line[i+2] === 'number' && ['+', '-', 'X', '/'].includes(line[i+1])) {
-                    const num1 = line[i];
-                    const operator = line[i+1];
-                    const num2 = line[i+2];
+            // Phase 2: Merge items in the collectedBlocks line (LTR)
+            // Note: 'line' here is referring to the conceptual line of blocks, not a new variable.
+            // We operate directly on collectedBlocks.
+            for (let i = 0; i < collectedBlocks.length - 2; i++) {
+                if (typeof collectedBlocks[i] === 'number' && typeof collectedBlocks[i+2] === 'number' && ['+', '-', 'X', '/'].includes(collectedBlocks[i+1])) {
+                    const num1 = collectedBlocks[i];
+                    const operator = collectedBlocks[i+1];
+                    const num2 = collectedBlocks[i+2];
                     const result = performCalculation(num1, operator, num2);
                     if (result !== null) {
-                        line.splice(i, 3, result); // Replace N, O, N with Result
+                        collectedBlocks.splice(i, 3, result); // Replace N, O, N with Result
                         i--; // Re-check from the new result's position in case of chained ops like 1+2+3
-                        // moved = true; // A merge counts as a move. This will be set later by comparing initialRowState
                     }
                 }
             }
             
             // Phase 3: Place merged line back, aligned left
-            const newRow = Array(GRID_SIZE).fill(null);
-            for (let i = 0; i < line.length; i++) {
-                newRow[i] = line[i];
+            const newRow = Array(GRID_SIZE).fill(null); // This is the newRow that was causing the error
+            for (let i = 0; i < collectedBlocks.length; i++) {
+                newRow[i] = collectedBlocks[i];
             }
 
             // Check if row actually changed compared to its initial state
@@ -199,32 +187,33 @@ document.addEventListener('DOMContentLoaded', () => {
         let moved = false;
         for (let r = 0; r < GRID_SIZE; r++) {
             let initialRowState = [...board[r]];
-            let line = [];
+            // Phase 1: Collect
+            let collectedBlocks = [];
             for (let c = 0; c < GRID_SIZE; c++) {
                 if (board[r][c] !== null) {
-                    line.push(board[r][c]);
+                    collectedBlocks.push(board[r][c]);
                 }
             }
 
-            // Merge (LTR evaluation always, so N1, O, N2)
-            for (let i = 0; i < line.length - 2; i++) {
-                 if (typeof line[i] === 'number' && typeof line[i+2] === 'number' && ['+', '-', 'X', '/'].includes(line[i+1])) {
-                    const num1 = line[i];
-                    const operator = line[i+1];
-                    const num2 = line[i+2];
+            // Phase 2: Merge (LTR evaluation always, so N1, O, N2)
+            for (let i = 0; i < collectedBlocks.length - 2; i++) {
+                 if (typeof collectedBlocks[i] === 'number' && typeof collectedBlocks[i+2] === 'number' && ['+', '-', 'X', '/'].includes(collectedBlocks[i+1])) {
+                    const num1 = collectedBlocks[i];
+                    const operator = collectedBlocks[i+1];
+                    const num2 = collectedBlocks[i+2];
                     const result = performCalculation(num1, operator, num2);
                     if (result !== null) {
-                        line.splice(i, 3, result);
+                        collectedBlocks.splice(i, 3, result);
                         i--; 
-                        // moved = true;
                     }
                 }
             }
 
+            // Phase 3: Place back, aligned right
             const newRow = Array(GRID_SIZE).fill(null);
             let newRowIdx = GRID_SIZE - 1;
-            for (let i = line.length - 1; i >= 0; i--) {
-                newRow[newRowIdx--] = line[i];
+            for (let i = collectedBlocks.length - 1; i >= 0; i--) {
+                newRow[newRowIdx--] = collectedBlocks[i];
             }
             
             for (let c = 0; c < GRID_SIZE; c++) {
@@ -244,31 +233,32 @@ document.addEventListener('DOMContentLoaded', () => {
             let initialColState = [];
             for(let r=0; r<GRID_SIZE; r++) initialColState.push(board[r][c]);
 
-            let line = [];
+            // Phase 1: Collect
+            let collectedBlocks = [];
             for (let r = 0; r < GRID_SIZE; r++) {
                 if (board[r][c] !== null) {
-                    line.push(board[r][c]);
+                    collectedBlocks.push(board[r][c]);
                 }
             }
 
-            // Merge (TTB evaluation always, so N1, O, N2)
-            for (let i = 0; i < line.length - 2; i++) {
-                if (typeof line[i] === 'number' && typeof line[i+2] === 'number' && ['+', '-', 'X', '/'].includes(line[i+1])) {
-                    const num1 = line[i];
-                    const operator = line[i+1];
-                    const num2 = line[i+2];
+            // Phase 2: Merge (TTB evaluation always, so N1, O, N2)
+            for (let i = 0; i < collectedBlocks.length - 2; i++) {
+                if (typeof collectedBlocks[i] === 'number' && typeof collectedBlocks[i+2] === 'number' && ['+', '-', 'X', '/'].includes(collectedBlocks[i+1])) {
+                    const num1 = collectedBlocks[i];
+                    const operator = collectedBlocks[i+1];
+                    const num2 = collectedBlocks[i+2];
                     const result = performCalculation(num1, operator, num2);
                     if (result !== null) {
-                        line.splice(i, 3, result);
+                        collectedBlocks.splice(i, 3, result);
                         i--;
-                        // moved = true;
                     }
                 }
             }
 
+            // Phase 3: Place back, aligned top
             const newCol = Array(GRID_SIZE).fill(null);
-            for (let i = 0; i < line.length; i++) {
-                newCol[i] = line[i];
+            for (let i = 0; i < collectedBlocks.length; i++) {
+                newCol[i] = collectedBlocks[i];
             }
 
             for (let r = 0; r < GRID_SIZE; r++) {
@@ -287,32 +277,33 @@ document.addEventListener('DOMContentLoaded', () => {
             let initialColState = [];
             for(let r=0; r<GRID_SIZE; r++) initialColState.push(board[r][c]);
 
-            let line = [];
+            // Phase 1: Collect
+            let collectedBlocks = [];
             for (let r = 0; r < GRID_SIZE; r++) {
                 if (board[r][c] !== null) {
-                    line.push(board[r][c]);
+                    collectedBlocks.push(board[r][c]);
                 }
             }
 
-            // Merge (TTB evaluation always, so N1, O, N2)
-             for (let i = 0; i < line.length - 2; i++) {
-                if (typeof line[i] === 'number' && typeof line[i+2] === 'number' && ['+', '-', 'X', '/'].includes(line[i+1])) {
-                    const num1 = line[i];
-                    const operator = line[i+1];
-                    const num2 = line[i+2];
+            // Phase 2: Merge (TTB evaluation always, so N1, O, N2)
+             for (let i = 0; i < collectedBlocks.length - 2; i++) {
+                if (typeof collectedBlocks[i] === 'number' && typeof collectedBlocks[i+2] === 'number' && ['+', '-', 'X', '/'].includes(collectedBlocks[i+1])) {
+                    const num1 = collectedBlocks[i];
+                    const operator = collectedBlocks[i+1];
+                    const num2 = collectedBlocks[i+2];
                     const result = performCalculation(num1, operator, num2);
                     if (result !== null) {
-                        line.splice(i, 3, result);
+                        collectedBlocks.splice(i, 3, result);
                         i--;
-                        // moved = true;
                     }
                 }
             }
             
+            // Phase 3: Place back, aligned bottom
             const newCol = Array(GRID_SIZE).fill(null);
             let newColIdx = GRID_SIZE - 1;
-            for (let i = line.length - 1; i >= 0; i--) {
-                newCol[newColIdx--] = line[i];
+            for (let i = collectedBlocks.length - 1; i >= 0; i--) {
+                newCol[newColIdx--] = collectedBlocks[i];
             }
 
             for (let r = 0; r < GRID_SIZE; r++) {
